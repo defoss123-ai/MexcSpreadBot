@@ -94,45 +94,27 @@ namespace MexcSpreadBot.Services.DexQuote
                     return;
                 }
 
-                var quote = selected.Quote;
+                var now = DateTime.UtcNow;
                 var updated = _state.AddOrUpdate(pair.Symbol,
                     _ => new PairData { Symbol = pair.Symbol },
                     (_, current) =>
                     {
                         current.Symbol = pair.Symbol;
-                        current.DexBid = quote.Bid;
-                        current.DexAsk = quote.Ask;
+                        current.DexBid = selected.Bid;
+                        current.DexAsk = selected.Ask;
                         current.DexLatencyMs = selected.ElapsedMilliseconds;
-                        current.DexUpdatedAtUtc = quote.UpdatedAtUtc;
+                        current.DexUpdatedAtUtc = now;
                         return current;
                     });
 
                 QuoteUpdated?.Invoke(updated);
-                Log?.Invoke($"[{DateTime.Now:HH:mm:ss}] DEX {pair.Symbol} via {selected.Provider}: {selected.ElapsedMilliseconds}ms");
+                Log?.Invoke($"[{DateTime.Now:HH:mm:ss}] DEX {pair.Symbol} via {selected.Name}: {selected.ElapsedMilliseconds}ms");
             }
             finally
             {
                 _semaphore.Release();
             }
         }
-
-        private static async Task<ProviderAttempt> TryGetQuoteAsync(IDexQuoteProvider provider, QuotePair pair, CancellationToken ct)
-        {
-            try
-            {
-                var sw = Stopwatch.StartNew();
-                var quote = await provider.GetQuoteAsync(pair, ct);
-                sw.Stop();
-                return new ProviderAttempt(provider.Name, quote, sw.ElapsedMilliseconds);
-            }
-            catch (Exception ex)
-            {
-                FileLog.Error($"DEX provider failed: {provider.Name} {pair.Symbol}", ex);
-                return new ProviderAttempt(provider.Name, null, 0);
-            }
-        }
-
-        private sealed record ProviderAttempt(string Provider, DexQuote? Quote, long ElapsedMilliseconds);
 
         public void Dispose()
         {
