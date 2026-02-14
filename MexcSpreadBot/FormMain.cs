@@ -7,21 +7,21 @@ namespace MexcSpreadBot
             InitializeComponent();
         }
 
-        private void ÒÔÂ‰˚ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void —Å–ø—Ä–µ–¥—ãToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!Application.OpenForms.OfType<FormSpread>().Any())
             {
-                var fs = new FormSpread();
-                fs.Show();
+                var spreadForm = new FormSpread();
+                spreadForm.Show();
             }
         }
 
-        private void Ô‡˚ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void –ø–∞—Ä—ãToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!Application.OpenForms.OfType<FormPairs>().Any())
             {
-                var fs = new FormPairs();
-                fs.Show();
+                var pairsForm = new FormPairs();
+                pairsForm.Show();
             }
         }
     }
