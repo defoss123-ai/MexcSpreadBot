@@ -1,4 +1,4 @@
-namespace MexcSpreadBot.Services.DexQuote
+namespace MexcSpreadBot.Services.DexQuoteProviders
 {
     public static class SharedHttp
     {

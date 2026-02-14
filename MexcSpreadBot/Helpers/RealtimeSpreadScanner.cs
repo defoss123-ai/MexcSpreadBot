@@ -1,5 +1,5 @@
 using MexcSpreadBot.Data;
-using MexcSpreadBot.Services.DexQuote;
+using MexcSpreadBot.Services.DexQuoteProviders;
 using MexcSpreadBot.Services.Mexc;
 using MexcSpreadBot.Services.Spread;
 using System.Collections.Concurrent;

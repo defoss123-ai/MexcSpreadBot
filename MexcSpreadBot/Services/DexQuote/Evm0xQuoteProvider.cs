@@ -2,7 +2,7 @@ using MexcSpreadBot.Data;
 using System.Globalization;
 using System.Text.Json;
 
-namespace MexcSpreadBot.Services.DexQuote
+namespace MexcSpreadBot.Services.DexQuoteProviders
 {
     public sealed class Evm0xQuoteProvider : IDexQuoteProvider
     {
@@ -10,7 +10,7 @@ namespace MexcSpreadBot.Services.DexQuote
 
         public bool CanHandle(QuotePair pair) => pair.Chain == ChainType.Evm;
 
-        public async Task<(double Bid, double Ask)> GetQuoteAsync(QuotePair pair, CancellationToken ct)
+        public async Task<DexQuote?> GetQuoteAsync(QuotePair pair, CancellationToken ct)
         {
             var sellBaseUrl = $"https://api.0x.org/swap/v1/price?sellToken={pair.BaseTokenAddress}&buyToken={pair.QuoteTokenAddress}&sellAmount=100000000";
             var sellQuoteUrl = $"https://api.0x.org/swap/v1/price?sellToken={pair.QuoteTokenAddress}&buyToken={pair.BaseTokenAddress}&sellAmount=100000000";
@@ -22,7 +22,7 @@ namespace MexcSpreadBot.Services.DexQuote
             var bid = ReadPrice(responses[0]);
             var inverse = ReadPrice(responses[1]);
             var ask = inverse > 0 ? 1d / inverse : 0;
-            return (bid, ask);
+            return bid > 0 && ask > 0 ? new DexQuote { Bid = bid, Ask = ask } : null;
         }
 
         private static double ReadPrice(string json)
