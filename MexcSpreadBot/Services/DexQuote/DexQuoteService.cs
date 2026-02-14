@@ -70,11 +70,26 @@ namespace MexcSpreadBot.Services.DexQuote
             try
             {
                 var candidates = _providers.Where(p => p.CanHandle(pair)).ToList();
-                var attempts = candidates.Select(provider => TryGetQuoteAsync(provider, pair, ct)).ToArray();
-                var results = await Task.WhenAll(attempts);
+                var attempts = candidates
+                    .Select(async provider =>
+                    {
+                        try
+                        {
+                            var sw = Stopwatch.StartNew();
+                            var quote = await provider.GetQuoteAsync(pair, ct);
+                            sw.Stop();
+                            return (provider.Name, quote.Bid, quote.Ask, sw.ElapsedMilliseconds);
+                        }
+                        catch (Exception ex)
+                        {
+                            FileLog.Error($"DEX provider failed: {provider.Name} {pair.Symbol}", ex);
+                            return (provider.Name, 0d, 0d, 0L);
+                        }
+                    }).ToArray();
 
-                var selected = results.FirstOrDefault(x => x.Quote != null && x.Quote.Bid > 0 && x.Quote.Ask > 0);
-                if (selected.Quote == null)
+                var results = await Task.WhenAll(attempts);
+                var selected = results.FirstOrDefault(x => x.Bid > 0 && x.Ask > 0);
+                if (selected.Bid <= 0 || selected.Ask <= 0)
                 {
                     return;
                 }
