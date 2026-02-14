@@ -6,6 +6,6 @@ namespace MexcSpreadBot.Services.DexQuote
     {
         string Name { get; }
         bool CanHandle(QuotePair pair);
-        Task<(double Bid, double Ask)> GetQuoteAsync(QuotePair pair, CancellationToken ct);
+        Task<DexQuote?> GetQuoteAsync(QuotePair pair, CancellationToken ct);
     }
 }
