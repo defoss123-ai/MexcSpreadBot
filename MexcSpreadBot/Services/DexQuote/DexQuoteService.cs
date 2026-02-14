@@ -3,7 +3,7 @@ using MexcSpreadBot.Helpers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace MexcSpreadBot.Services.DexQuote
+namespace MexcSpreadBot.Services.DexQuoteProviders
 {
     public sealed class DexQuoteService : IDisposable
     {
@@ -78,7 +78,9 @@ namespace MexcSpreadBot.Services.DexQuote
                             var sw = Stopwatch.StartNew();
                             var quote = await provider.GetQuoteAsync(pair, ct);
                             sw.Stop();
-                            return (provider.Name, quote.Bid, quote.Ask, sw.ElapsedMilliseconds);
+                            return quote == null
+                                ? (provider.Name, 0d, 0d, sw.ElapsedMilliseconds)
+                                : (provider.Name, quote.Bid, quote.Ask, sw.ElapsedMilliseconds);
                         }
                         catch (Exception ex)
                         {

@@ -1,6 +1,6 @@
 using MexcSpreadBot.Data;
 
-namespace MexcSpreadBot.Services.DexQuote
+namespace MexcSpreadBot.Services.DexQuoteProviders
 {
     public sealed class SolanaJupiterQuoteProvider : IDexQuoteProvider
     {
@@ -8,10 +8,10 @@ namespace MexcSpreadBot.Services.DexQuote
 
         public bool CanHandle(QuotePair pair) => pair.Chain == ChainType.Solana;
 
-        public Task<(double Bid, double Ask)> GetQuoteAsync(QuotePair pair, CancellationToken ct)
+        public Task<DexQuote?> GetQuoteAsync(QuotePair pair, CancellationToken ct)
         {
             // BTCUSDT-first rollout currently uses EVM only. Placeholder for Solana expansion.
-            return Task.FromResult((0d, 0d));
+            return Task.FromResult<DexQuote?>(null);
         }
     }
 }
